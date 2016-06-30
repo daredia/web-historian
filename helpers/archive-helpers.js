@@ -82,6 +82,7 @@ exports.isUrlArchived = function(url, callback) {
 exports.downloadUrls = function(urlArray) {
   // input: array of urls
   // side effect: downloads html for each url in array, unconditionally
+  console.log('inside downloadUrls');
   _.each(urlArray, function(url) {
     // make GET request to url
     http.request(

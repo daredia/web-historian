@@ -108,6 +108,20 @@ exports.handleRequest = function (req, res) {
             res.writeHead(200, redirectHeaders);
             res.end();
           });
+        } else {
+          archive.isUrlArchived(url, function(isArchived) {
+            if (isArchived) {
+              var redirectHeaders = _.extend({}, helpers.headers);
+              redirectHeaders['location'] = '/' + url;
+              res.writeHead(200, redirectHeaders);
+              res.end();
+            } else {
+              var redirectHeaders = _.extend({}, helpers.headers);
+              redirectHeaders['location'] = '/loading.html';
+              res.writeHead(200, redirectHeaders);
+              res.end();
+            }
+          });
         }
         // check if url is NOT in the list
           // if true (i.e., url is NOT in the list)
@@ -116,11 +130,7 @@ exports.handleRequest = function (req, res) {
           // if false (i.e., url IS in the list), check if archived
             // if yes, respond with redirect to /sitename
             // else if no, respond with redirect to loading.html 
-
-        
       });
     });
-
-    
   }
 };
