@@ -39,7 +39,6 @@ exports.readListOfUrls = function(callback) {
 };
 
 exports.isUrlInList = function(url, callback) {
-
   var result;
   exports.readListOfUrls(function(urlArray) {
     if ( _.indexOf(urlArray, url) === -1) {
@@ -52,7 +51,6 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  
   fs.appendFile(exports.paths.list, url + '\n', function (err) {
     if (err) {
       throw err;
