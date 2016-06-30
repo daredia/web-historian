@@ -19,7 +19,7 @@ archive.readListOfUrls(function(sitesArray) {
     });
   });
 });
-  
+
 // create function called getUrlsToDownload
 // that will take a callback
 // the function will do lines 8-20, and then invoke the callback on the resulting array

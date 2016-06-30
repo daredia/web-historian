@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-var http = require('http');
+var https = require('https');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -82,14 +82,15 @@ exports.isUrlArchived = function(url, callback) {
 exports.downloadUrls = function(urlArray) {
   // input: array of urls
   // side effect: downloads html for each url in array, unconditionally
-  console.log('inside downloadUrls');
+  console.log('Inside downloadUrls');
   _.each(urlArray, function(url) {
     // make GET request to url
-    http.request(
+    var req = https.request(
       {
         host: url
       },
       function(response) {
+        console.log('url: ', url, 'response: ', response);
         var str = '';
         //another chunk of data has been recieved, so append it to `str`
         response.on('data', function (chunk) {
@@ -108,7 +109,14 @@ exports.downloadUrls = function(urlArray) {
             console.log('write html to file is done');
           });          
         });
-      }).end();
+      });
+
+    req.on('error', function(e) {
+      console.log(e);
+      console.log(e.message);
+    });
+
+    req.end();
     // create a new file populated with the response body
   });
 };
