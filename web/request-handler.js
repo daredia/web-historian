@@ -2,14 +2,14 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var helpers = require('./http-helpers');
 var fs = require('fs');
+var _ = require('underscore');
 // require more modules/folders here!
 
 exports.handleRequest = function (req, res) {
   // check if request is a GET
 
-  
+  var myPath = archive.paths.siteAssets;
   if (req.method === 'GET') {
-    var myPath = archive.paths.siteAssets;
     if ( req.url === '/') {
       myPath = myPath + '/index.html';
 
@@ -31,11 +31,22 @@ exports.handleRequest = function (req, res) {
         // helpers.headers['Content-Type'] = 'text/css';
         res.writeHead(200, helpers.headers);
         res.write(data);
-        // debugger;
         res.end();
       });
     } else if ( req.url.includes('jquery.js') ) {
       myPath = myPath + '/bower_components/jquery/dist/jquery.js';
+
+      fs.readFile(myPath, function (err, data) {
+        if (err) {
+          throw err; 
+        }
+        // helpers.headers['Content-Type'] = 'text/css';
+        res.writeHead(200, helpers.headers);
+        res.write(data);
+        res.end();
+      });
+    } else if ( req.url.includes('loading.html') ) {
+      myPath = myPath + '/loading.html';
 
       fs.readFile(myPath, function (err, data) {
         if (err) {
@@ -74,7 +85,6 @@ exports.handleRequest = function (req, res) {
     }
   } else if ( req.method === 'POST') {
     // request body will be a string containing a url 
-    console.log('Post request received');
     var str = '';
     //another chunk of data has been recieved, so append it to `str`
     req.on('data', function (chunk) {
@@ -93,18 +103,24 @@ exports.handleRequest = function (req, res) {
         if (!exists) {
           archive.addUrlToList(url, function() {
             // respond to user with 302
-            res.writeHead(200, helpers.headers);
+            var redirectHeaders = _.extend({}, helpers.headers);
+            redirectHeaders['location'] = '/loading.html';
+            res.writeHead(200, redirectHeaders);
             res.end();
           });
         }
+        // check if url is NOT in the list
+          // if true (i.e., url is NOT in the list)
+            // add to the list
+            // respond with redirect to loading.html 
+          // if false (i.e., url IS in the list), check if archived
+            // if yes, respond with redirect to /sitename
+            // else if no, respond with redirect to loading.html 
+
+        
       });
     });
 
     
-      // if true, append url and \n to list
-
-      // TODO: if already archived, redirect user to /sitename 
-        // which will write response with site's html
-        // else, respond with loading.html
   }
 };

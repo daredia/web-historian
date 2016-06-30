@@ -22,15 +22,16 @@
         url: 'http://127.0.0.1:3000',
         type: 'POST',
         data: 'url=' + $('input').val(),
-        // datatype: 'json',
-        success: () => {
+        //datatype: 'text/html',
+        success: (data, successCode, res) => {
+          console.log(data);
+          window.location.href = 'http://127.0.0.1:3000' + res.getResponseHeader('location');;
           console.log('form post success');
         },
         error: () => {
           console.error('form post failed:');
         }
       });
-      console.log('form submit triggered');
     });
 
 
