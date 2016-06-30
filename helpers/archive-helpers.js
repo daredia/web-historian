@@ -25,13 +25,60 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function() {
+exports.readListOfUrls = function(callback) {
+  //read sites.txt file. will return content.
+  fs.readFile(exports.paths.list, 'utf-8', function(err, data) {
+
+    if (err) {
+      throw err;
+    }
+  //parse contents and return
+    return callback(data.split('\n'));
+  });
 };
 
-exports.isUrlInList = function() {
+exports.isUrlInList = function(url, callback) {
+  // inputs: url, callback 
+  // output: callback invocation on the bool if url is in list
+
+  var result;
+  return exports.readListOfUrls(function(urlArray) {
+    if ( _.indexOf(urlArray, url) === -1) {
+      result = false;
+    } else {
+      result = true;
+    }
+
+    console.log('result value in isUrlInList: ', result);
+    //returns true
+    return callback(result);
+  });
 };
 
-exports.addUrlToList = function() {
+exports.addUrlToList = function(url, callback) {
+  //input: URL and callback
+  
+  fs.appendFile(exports.paths.list, url + '\n', function (err) {
+    if (err) {
+      throw err;
+    }
+  });
+
+  console.log('callback value inside addURLToList: ', callback());
+  //returns undefined
+  return callback(url);
+
+  // exports.readListOfUrls(function(urlArray) {
+  //   //do something with array
+  //   urlArray.push(url);
+
+  //   //take URL array and call join('\n') on it. 
+  //   //Write contents using fs.writeFile back to filepath.
+
+  //   callback(urlArray);
+  // });
+  //Effects: adds URL to the URL List, and then invokes callback on the new list.
+  //read file and get array of URLs
 };
 
 exports.isUrlArchived = function() {
