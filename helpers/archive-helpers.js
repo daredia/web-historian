@@ -26,27 +26,27 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
-  //read sites.txt file. will return content.
+  //read sites.txt file. will call callback
   fs.readFile(exports.paths.list, 'utf-8', function(err, data) {
 
     if (err) {
       throw err;
     }
-  //parse contents and return
-    return callback(data.split('\n'));
+  //parse contents
+    callback(data.split('\n'));
   });
 };
 
 exports.isUrlInList = function(url, callback) {
 
   var result;
-  return exports.readListOfUrls(function(urlArray) {
+  exports.readListOfUrls(function(urlArray) {
     if ( _.indexOf(urlArray, url) === -1) {
       result = false;
     } else {
       result = true;
     }
-    return callback(result);
+    callback(result);
   });
 };
 
@@ -60,8 +60,28 @@ exports.addUrlToList = function(url, callback) {
   });
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(url, callback) {
+  // input: url and callback
+  // output: boolean
+  // side effect: call callback
+  var result;
+  // check archives/sites to see if a file with the name of url exists
+  var filePath = exports.paths.archivedSites + '/' + url;
+  fs.access(filePath, fs.F_OK, function(err) {
+    if (!err) {
+      result = true;
+
+    } else {
+      result = false;
+    }
+    callback(result);
+  });
 };
 
 exports.downloadUrls = function() {
 };
+
+
+
+
+

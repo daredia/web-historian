@@ -111,50 +111,50 @@ describe('archive helpers', function() {
 
   describe('#addUrlToList', function () {
     it('should add a url to the list', function (done) {
-      //debugger;
+
       var urlArray = ['example1.com', 'example2.com\n'];
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));
 
       archive.addUrlToList('someurl.com', function () {
         archive.isUrlInList('someurl.com', function (exists) {
           expect(exists).to.be.true;
-          //debugger;
+
           done();
         });
       });
     });
   });
 
-  // describe('#isUrlArchived', function () {
-  //   it('should check if a url is archived', function (done) {
-  //     fs.writeFileSync(archive.paths.archivedSites + '/www.example.com', 'blah blah');
+  describe('#isUrlArchived', function () {
+    it('should check if a url is archived', function (done) {
+      fs.writeFileSync(archive.paths.archivedSites + '/www.example.com', 'blah blah');
 
-  //     var counter = 0;
-  //     var total = 2;
+      var counter = 0;
+      var total = 2;
 
-  //     archive.isUrlArchived('www.example.com', function (exists) {
-  //       expect(exists).to.be.true;
-  //       if (++counter === total) { done(); }
-  //     });
+      archive.isUrlArchived('www.example.com', function (exists) {
+        expect(exists).to.be.true;
+        if (++counter === total) { done(); }
+      });
 
-  //     archive.isUrlArchived('www.notarchived.com', function (exists) {
-  //       expect(exists).to.be.false;
-  //       if (++counter === total) { done(); }
-  //     });
-  //   });
-  // });
+      archive.isUrlArchived('www.notarchived.com', function (exists) {
+        expect(exists).to.be.false;
+        if (++counter === total) { done(); }
+      });
+    });
+  });
 
-  // describe('#downloadUrls', function () {
-  //   it('should download all pending urls in the list', function (done) {
-  //     var urlArray = ['www.example.com', 'www.google.com'];
-  //     archive.downloadUrls(urlArray);
+  describe('#downloadUrls', function () {
+    it('should download all pending urls in the list', function (done) {
+      var urlArray = ['www.example.com', 'www.google.com'];
+      archive.downloadUrls(urlArray);
 
-  //     // Ugly hack to wait for all downloads to finish.
-  //     setTimeout(function () {
-  //       expect(fs.readdirSync(archive.paths.archivedSites)).to.deep.equal(urlArray);
-  //       done();
-  //     }, 500);
-  //   });
-  // });
+      // Ugly hack to wait for all downloads to finish.
+      setTimeout(function () {
+        expect(fs.readdirSync(archive.paths.archivedSites)).to.deep.equal(urlArray);
+        done();
+      }, 500);
+    });
+  });
 });
 
