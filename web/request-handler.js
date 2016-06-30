@@ -34,6 +34,18 @@ exports.handleRequest = function (req, res) {
         // debugger;
         res.end();
       });
+    } else if ( req.url.includes('jquery.js') ) {
+      myPath = myPath + '/bower_components/jquery/dist/jquery.js';
+
+      fs.readFile(myPath, function (err, data) {
+        if (err) {
+          throw err; 
+        }
+        // helpers.headers['Content-Type'] = 'text/css';
+        res.writeHead(200, helpers.headers);
+        res.write(data);
+        res.end();
+      });
     } else {
       //parse out URL path. This should be a name of a site.
       myPath = archive.paths.archivedSites + req.url;
@@ -62,6 +74,7 @@ exports.handleRequest = function (req, res) {
     }
   } else if ( req.method === 'POST') {
     // request body will be a string containing a url 
+    console.log('Post request received');
     var str = '';
     //another chunk of data has been recieved, so append it to `str`
     req.on('data', function (chunk) {
@@ -80,7 +93,7 @@ exports.handleRequest = function (req, res) {
         if (!exists) {
           archive.addUrlToList(url, function() {
             // respond to user with 302
-            res.writeHead(302, helpers.headers);
+            res.writeHead(200, helpers.headers);
             res.end();
           });
         }
