@@ -31,7 +31,7 @@ exports.handleRequest = function (req, res) {
         // helpers.headers['Content-Type'] = 'text/css';
         res.writeHead(200, helpers.headers);
         res.write(data);
-        debugger;
+        // debugger;
         res.end();
       });
     }

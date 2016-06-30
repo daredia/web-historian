@@ -38,8 +38,6 @@ exports.readListOfUrls = function(callback) {
 };
 
 exports.isUrlInList = function(url, callback) {
-  // inputs: url, callback 
-  // output: callback invocation on the bool if url is in list
 
   var result;
   return exports.readListOfUrls(function(urlArray) {
@@ -48,37 +46,18 @@ exports.isUrlInList = function(url, callback) {
     } else {
       result = true;
     }
-
-    console.log('result value in isUrlInList: ', result);
-    //returns true
     return callback(result);
   });
 };
 
 exports.addUrlToList = function(url, callback) {
-  //input: URL and callback
   
   fs.appendFile(exports.paths.list, url + '\n', function (err) {
     if (err) {
       throw err;
     }
+    callback();
   });
-
-  console.log('callback value inside addURLToList: ', callback());
-  //returns undefined
-  return callback(url);
-
-  // exports.readListOfUrls(function(urlArray) {
-  //   //do something with array
-  //   urlArray.push(url);
-
-  //   //take URL array and call join('\n') on it. 
-  //   //Write contents using fs.writeFile back to filepath.
-
-  //   callback(urlArray);
-  // });
-  //Effects: adds URL to the URL List, and then invokes callback on the new list.
-  //read file and get array of URLs
 };
 
 exports.isUrlArchived = function() {
