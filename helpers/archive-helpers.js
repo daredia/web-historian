@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var http = require('http');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -78,9 +79,40 @@ exports.isUrlArchived = function(url, callback) {
   });
 };
 
-exports.downloadUrls = function() {
+exports.downloadUrls = function(urlArray) {
+  // input: array of urls
+  // side effect: downloads html for each url in array, unconditionally
+  _.each(urlArray, function(url) {
+    // make GET request to url
+    http.request(
+      {
+        host: url
+      },
+      function(response) {
+        var str = '';
+        //another chunk of data has been recieved, so append it to `str`
+        response.on('data', function (chunk) {
+          str += chunk;
+        });
+
+        //the whole response has been recieved, so we just print it out here
+        response.on('end', function () {
+          console.log(str);
+          // write to file
+          var filePath = exports.paths.archivedSites + '/' + url;
+          fs.writeFile(filePath, str, function(err) {
+            if (err) {
+              throw err;
+            }
+            console.log('write html to file is done');
+          });          
+        });
+      }).end();
+    // create a new file populated with the response body
+  });
 };
 
+// TODO: add another site to the test file to see if it handles new sites
 
 
 
