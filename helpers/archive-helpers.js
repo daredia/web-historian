@@ -85,7 +85,7 @@ exports.downloadUrls = function(urlArray) {
   // side effect: downloads html for each url in array, unconditionally
   console.log('Inside downloadUrls');
   _.each(urlArray, function(url) {
-    var urlObj = urlParser.parse(url);
+    var urlObj = urlParser.parse('http://' + url);
     // make GET request to url
     var req = https.request(
       {
@@ -116,8 +116,7 @@ exports.downloadUrls = function(urlArray) {
       });
 
     req.on('error', function(e) {
-      console.log(e);
-      console.log(e.message);
+      console.log('e.message:', e.message, urlObj);
     });
 
     req.end();
@@ -134,7 +133,7 @@ exports.searchFiles = function(query, cb) {
         if (err) {
           throw err;
         } else {
-          if (contents.indexOf(query) !== -1) { // if file contains query
+          if (contents.toLowerCase().indexOf(query) !== -1) { // if file contains query
             matchingFiles.push(decodeURIComponent(file));
           }  
         }
