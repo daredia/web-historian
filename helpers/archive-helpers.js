@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var https = require('https');
+var urlParser = require('url');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -84,10 +85,12 @@ exports.downloadUrls = function(urlArray) {
   // side effect: downloads html for each url in array, unconditionally
   console.log('Inside downloadUrls');
   _.each(urlArray, function(url) {
+    var urlObj = urlParser.parse(url);
     // make GET request to url
     var req = https.request(
       {
-        host: url,
+        host: urlObj.host,
+        path: urlObj.path,
         rejectUnauthorized: false // TODO: undo this and address properly before productionalizing
       },
       function(response) {
@@ -102,7 +105,7 @@ exports.downloadUrls = function(urlArray) {
         response.on('end', function () {
           // console.log(str);
           // write to file
-          var filePath = exports.paths.archivedSites + '/' + url;
+          var filePath = exports.paths.archivedSites + '/' + encodeURIComponent(urlObj.host + urlObj.path);
           fs.writeFile(filePath, str, function(err) {
             if (err) {
               throw err;

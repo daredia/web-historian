@@ -59,10 +59,10 @@ exports.handleRequest = function (req, res) {
       });
     } else {
       //parse out URL path. This should be a name of a site.
-      myPath = archive.paths.archivedSites + req.url;
+      myPath = archive.paths.archivedSites + decodeURIComponent(req.url);
       
       //grab contents of file and write back to response body
-      var url = req.url.slice(1);
+      var url = decodeURIComponent(req.url.slice(1));
 
       archive.isUrlArchived(url, function(exists) {
         if (exists) {
