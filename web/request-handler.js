@@ -96,7 +96,7 @@ exports.handleRequest = function (req, res) {
     req.on('end', function () {
       // once streaming of data is done, we'll have a stringified object
       // grab url property of that object
-      var url = str.slice(4);
+      var url = decodeURIComponent(str.slice(4));
       // pass that url into below helper
       // check to see if url is NOT in the list (helper method)
       archive.isUrlInList(url, function(exists) {

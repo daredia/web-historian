@@ -87,10 +87,11 @@ exports.downloadUrls = function(urlArray) {
     // make GET request to url
     var req = https.request(
       {
-        host: url
+        host: url,
+        rejectUnauthorized: false // TODO: undo this and address properly before productionalizing
       },
       function(response) {
-        console.log('url: ', url, 'response: ', response);
+        console.log('url being downloaded: ', url);
         var str = '';
         //another chunk of data has been recieved, so append it to `str`
         response.on('data', function (chunk) {
@@ -99,7 +100,7 @@ exports.downloadUrls = function(urlArray) {
 
         //the whole response has been recieved, so we just print it out here
         response.on('end', function () {
-          console.log(str);
+          // console.log(str);
           // write to file
           var filePath = exports.paths.archivedSites + '/' + url;
           fs.writeFile(filePath, str, function(err) {
