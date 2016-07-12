@@ -125,7 +125,28 @@ exports.downloadUrls = function(urlArray) {
   });
 };
 
-// TODO: add another site to the test file to see if it handles new sites
+exports.searchFiles = function(query, cb) {
+  var matchingFiles = [];
+  fs.readdir(exports.paths.archivedSites, function(err, files) {
+    var count = 0;
+    files.forEach(function(file) { 
+      fs.readFile(exports.paths.archivedSites + '/' + file, 'utf-8', function(err, contents) { 
+        if (err) {
+          throw err;
+        } else {
+          if (contents.indexOf(query) !== -1) { // if file contains query
+            matchingFiles.push(file);
+          }  
+        }
+        count++;
+        if (count === files.length) {
+          cb(matchingFiles);
+        }
+      }); 
+    });
+  });
+};
+
 
 
 

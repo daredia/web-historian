@@ -3,6 +3,7 @@ var archive = require('../helpers/archive-helpers');
 var helpers = require('./http-helpers');
 var fs = require('fs');
 var _ = require('underscore');
+var urlParser = require('url');
 // require more modules/folders here!
 
 exports.handleRequest = function (req, res) {
@@ -57,6 +58,18 @@ exports.handleRequest = function (req, res) {
         res.write(data);
         res.end();
       });
+    } else if ( req.url.includes('search?q') ) {
+      // search files for query
+      var urlObj = urlParser.parse(req.url, {parseQueryString: true});
+      var query = urlObj.query['q'];
+      archive.searchFiles(query, function(result) {
+        // return links that match
+        res.writeHead(200, helpers.headers);
+        res.write(JSON.stringify(result));
+        res.end();  
+      });
+
+      
     } else {
       //parse out URL path. This should be a name of a site.
       myPath = archive.paths.archivedSites + decodeURIComponent(req.url);
