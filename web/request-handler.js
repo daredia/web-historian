@@ -145,5 +145,11 @@ exports.handleRequest = function (req, res) {
             // else if no, respond with redirect to loading.html 
       });
     });
+  } else if ( req.method === 'OPTIONS') {
+    var headers = _.extend({}, helpers.headers);
+    headers['Content-Type'] = 'application/json';
+    headers['Allow'] = 'GET, POST, PUT, DELETE, OPTIONS';
+    res.writeHead(200, headers);
+    res.end();
   }
 };
