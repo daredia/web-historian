@@ -135,7 +135,7 @@ exports.searchFiles = function(query, cb) {
           throw err;
         } else {
           if (contents.indexOf(query) !== -1) { // if file contains query
-            matchingFiles.push(file);
+            matchingFiles.push(decodeURIComponent(file));
           }  
         }
         count++;
