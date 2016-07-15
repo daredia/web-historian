@@ -103,7 +103,6 @@ exports.downloadUrls = function(urlArray) {
 
         //the whole response has been recieved, so we just print it out here
         response.on('end', function () {
-          // console.log(str);
           // write to file
           var filePath = exports.paths.archivedSites + '/' + encodeURIComponent(urlObj.host + urlObj.path);
           fs.writeFile(filePath, str, function(err) {
@@ -125,7 +124,7 @@ exports.downloadUrls = function(urlArray) {
 };
 
 exports.searchFiles = function(query, cb) {
-  var matchingFiles = [];
+  var matchingFiles = {};
   fs.readdir(exports.paths.archivedSites, function(err, files) {
     var count = 0;
     files.forEach(function(file) { 
@@ -134,7 +133,8 @@ exports.searchFiles = function(query, cb) {
           throw err;
         } else {
           if (contents.toLowerCase().indexOf(query) !== -1) { // if file contains query
-            matchingFiles.push(decodeURIComponent(file));
+            var key = decodeURIComponent(file);
+            matchingFiles[key] = contents.toLowerCase();
           }  
         }
         count++;
