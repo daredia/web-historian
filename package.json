@@ -10,7 +10,7 @@
   },
   "scripts": {
     "postinstall": "curl -s https://raw.githubusercontent.com/hackreactor-labs/pomander/master/bin/install | bash",
-    "start": "node-inspector --no-preload & nodemon --debug ./web/basic-server.js",
+    "start": "node-inspector --no-preload & nodemon --debug ./web/express-server.js",
     "start:es6": "babel-node ./web/basic-server.js",
     "test": "node-inspector --no-preload & mocha test --debug-brk",
     "test:es6": "mocha --compilers js:babel-register test",
@@ -18,7 +18,10 @@
   },
   "dependencies": {
     "bluebird": "^3.3.4",
+    "body-parser": "^1.15.2",
     "cron": "^1.1.0",
+    "express": "^4.14.0",
+    "mongoose": "^4.5.4",
     "request": "^2.70.0",
     "underscore": "^1.8.3"
   },
