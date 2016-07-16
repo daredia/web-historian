@@ -1,3 +1,4 @@
+// TODO: refactor to better organize code into separate modules
 var express = require ('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -30,6 +31,7 @@ router.get('/', function(req, res) {
   res.json({ message: 'welcome to our history items api!'});
 });
 
+// TODO: add PUT handler to update existing records for things like visits, lastVisit, html
 router.route('/pages')
   .post(function(req, res) {
     Page.findOne( {url: req.body.url }, function(err, page) {

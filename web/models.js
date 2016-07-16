@@ -1,3 +1,4 @@
+// TODO: populate all these fields
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
