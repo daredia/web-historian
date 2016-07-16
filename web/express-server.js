@@ -32,26 +32,34 @@ router.get('/', function(req, res) {
 
 router.route('/pages')
   .post(function(req, res) {
-    var page = new Page();
-    
-    page.url = req.body.url || null;
-    page.title = req.body.title || null;
-    page.html = req.body.html || null;
-    page.text = req.body.text || null;
-    page.favicon = req.body.favicon || null;
-    page.hostname = req.body.hostname || null;
-    page.screenshot = req.body.screenshot || null;
-    page.referrer = req.body.referrer || null;
-    page.lastVisit = req.body.lastVisit || null;
-    page.visits = req.body.visits || null;
-
-    page.save(function(err) {
+    Page.findOne( {url: req.body.url }, function(err, page) {
       if (err) {
         res.send(err);
       }
-      res.json({ message: 'Page created!'} );
-    });
+      if (page) {
+        res.json(page);
+      } else {
+        var page = new Page();
+    
+        page.url = req.body.url || null;
+        page.title = req.body.title || null;
+        page.html = req.body.html || null;
+        page.text = req.body.text || null;
+        page.favicon = req.body.favicon || null;
+        page.hostname = req.body.hostname || null;
+        page.screenshot = req.body.screenshot || null;
+        page.referrer = req.body.referrer || null;
+        page.lastVisit = req.body.lastVisit || null;
+        page.visits = req.body.visits || null;
 
+        page.save(function(err) {
+          if (err) {
+            res.send(err);
+          }
+          res.json({ message: 'Page created!'} );
+        });
+      }
+    });
   })
 
   .get(function(req, res) {
