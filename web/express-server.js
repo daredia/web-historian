@@ -8,7 +8,7 @@ var Page = require('./models');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = process.env.port || 8080;
+var port = process.env.port || 8082;
 
 mongoose.connect('mongodb://localhost/web-historian');
 
