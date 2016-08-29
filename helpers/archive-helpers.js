@@ -1,7 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-var http = require('http');
+var https = require('https');
+var urlParser = require('url');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -80,13 +81,18 @@ exports.isUrlArchived = function(url, callback) {
 exports.downloadUrls = function(urlArray) {
   // input: array of urls
   // side effect: downloads html for each url in array, unconditionally
+  console.log('Inside downloadUrls');
   _.each(urlArray, function(url) {
+    var urlObj = urlParser.parse('http://' + url);
     // make GET request to url
-    http.request(
+    var req = https.request(
       {
-        host: url
+        host: urlObj.host,
+        path: urlObj.path,
+        rejectUnauthorized: false // TODO: undo this and address properly before productionalizing
       },
       function(response) {
+        console.log('url being downloaded: ', url);
         var str = '';
         //another chunk of data has been recieved, so append it to `str`
         response.on('data', function (chunk) {
@@ -95,9 +101,8 @@ exports.downloadUrls = function(urlArray) {
 
         //the whole response has been recieved, so we just print it out here
         response.on('end', function () {
-          console.log(str);
           // write to file
-          var filePath = exports.paths.archivedSites + '/' + url;
+          var filePath = exports.paths.archivedSites + '/' + encodeURIComponent(urlObj.host + urlObj.path);
           fs.writeFile(filePath, str, function(err) {
             if (err) {
               throw err;
@@ -105,12 +110,40 @@ exports.downloadUrls = function(urlArray) {
             console.log('write html to file is done');
           });          
         });
-      }).end();
+      });
+
+    req.on('error', function(e) {
+      console.log('e.message:', e.message, urlObj);
+    });
+
+    req.end();
     // create a new file populated with the response body
   });
 };
 
-// TODO: add another site to the test file to see if it handles new sites
+exports.searchFiles = function(query, cb) {
+  var matchingFiles = {};
+  fs.readdir(exports.paths.archivedSites, function(err, files) {
+    var count = 0;
+    files.forEach(function(file) { 
+      fs.readFile(exports.paths.archivedSites + '/' + file, 'utf-8', function(err, contents) { 
+        if (err) {
+          throw err;
+        } else {
+          if (contents.toLowerCase().indexOf(query) !== -1) { // if file contains query
+            var key = decodeURIComponent(file);
+            matchingFiles[key] = contents.toLowerCase();
+          }  
+        }
+        count++;
+        if (count === files.length) {
+          cb(matchingFiles);
+        }
+      }); 
+    });
+  });
+};
+
 
 
 

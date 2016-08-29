@@ -9,4 +9,30 @@
     <input type="input" name="url"></input>
   </form>
 </body>
+<script src="web/public/bower_components/jquery/dist/jquery.js"></script>
+<script>
+  $( document ).ready(function() {
+    // event listener for form submission
+      // on submit, send ajax post where post body is value of input field
+    $('form').on('submit', (event) => {
+      event.preventDefault();
+      
+      // ajax post
+      $.ajax({
+        url: 'http://127.0.0.1:3000',
+        type: 'POST',
+        data: 'url=' + $('input').val(),
+        //datatype: 'text/html',
+        success: (data, successCode, res) => {
+          console.log(data);
+          window.location.href = 'http://127.0.0.1:3000' + res.getResponseHeader('location');
+          console.log('form post success');
+        },
+        error: () => {
+          console.error('form post failed:');
+        }
+      });
+    });
+  });
+</script>
 </html>

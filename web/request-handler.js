@@ -2,14 +2,15 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var helpers = require('./http-helpers');
 var fs = require('fs');
+var _ = require('underscore');
+var urlParser = require('url');
 // require more modules/folders here!
 
 exports.handleRequest = function (req, res) {
   // check if request is a GET
 
-  
+  var myPath = archive.paths.siteAssets;
   if (req.method === 'GET') {
-    var myPath = archive.paths.siteAssets;
     if ( req.url === '/') {
       myPath = myPath + '/index.html';
 
@@ -31,15 +32,50 @@ exports.handleRequest = function (req, res) {
         // helpers.headers['Content-Type'] = 'text/css';
         res.writeHead(200, helpers.headers);
         res.write(data);
-        // debugger;
         res.end();
       });
+    } else if ( req.url.includes('jquery.js') ) {
+      myPath = myPath + '/bower_components/jquery/dist/jquery.js';
+
+      fs.readFile(myPath, function (err, data) {
+        if (err) {
+          throw err; 
+        }
+        // helpers.headers['Content-Type'] = 'text/css';
+        res.writeHead(200, helpers.headers);
+        res.write(data);
+        res.end();
+      });
+    } else if ( req.url.includes('loading.html') ) {
+      myPath = myPath + '/loading.html';
+
+      fs.readFile(myPath, function (err, data) {
+        if (err) {
+          throw err; 
+        }
+        // helpers.headers['Content-Type'] = 'text/css';
+        res.writeHead(200, helpers.headers);
+        res.write(data);
+        res.end();
+      });
+    } else if ( req.url.includes('search?q') ) {
+      // search files for query
+      var urlObj = urlParser.parse(req.url, {parseQueryString: true});
+      var query = urlObj.query['q'];
+      archive.searchFiles(query, function(result) {
+        // return links that match
+        res.writeHead(200, helpers.headers);
+        res.write(JSON.stringify(result));
+        res.end();  
+      });
+
+      
     } else {
       //parse out URL path. This should be a name of a site.
-      myPath = archive.paths.archivedSites + req.url;
+      myPath = archive.paths.archivedSites + decodeURIComponent(req.url);
       
       //grab contents of file and write back to response body
-      var url = req.url.slice(1);
+      var url = decodeURIComponent(req.url.slice(1));
 
       archive.isUrlArchived(url, function(exists) {
         if (exists) {
@@ -73,25 +109,47 @@ exports.handleRequest = function (req, res) {
     req.on('end', function () {
       // once streaming of data is done, we'll have a stringified object
       // grab url property of that object
-      var url = str.slice(4);
+      var url = decodeURIComponent(str.slice(4));
       // pass that url into below helper
       // check to see if url is NOT in the list (helper method)
       archive.isUrlInList(url, function(exists) {
         if (!exists) {
           archive.addUrlToList(url, function() {
             // respond to user with 302
-            res.writeHead(302, helpers.headers);
+            var redirectHeaders = _.extend({}, helpers.headers);
+            redirectHeaders['location'] = '/loading.html';
+            res.writeHead(200, redirectHeaders);
             res.end();
           });
+        } else {
+          archive.isUrlArchived(url, function(isArchived) {
+            if (isArchived) {
+              var redirectHeaders = _.extend({}, helpers.headers);
+              redirectHeaders['location'] = '/' + url;
+              res.writeHead(200, redirectHeaders);
+              res.end();
+            } else {
+              var redirectHeaders = _.extend({}, helpers.headers);
+              redirectHeaders['location'] = '/loading.html';
+              res.writeHead(200, redirectHeaders);
+              res.end();
+            }
+          });
         }
+        // check if url is NOT in the list
+          // if true (i.e., url is NOT in the list)
+            // add to the list
+            // respond with redirect to loading.html 
+          // if false (i.e., url IS in the list), check if archived
+            // if yes, respond with redirect to /sitename
+            // else if no, respond with redirect to loading.html 
       });
     });
-
-    
-      // if true, append url and \n to list
-
-      // TODO: if already archived, redirect user to /sitename 
-        // which will write response with site's html
-        // else, respond with loading.html
+  } else if ( req.method === 'OPTIONS') {
+    var headers = _.extend({}, helpers.headers);
+    headers['Content-Type'] = 'application/json';
+    headers['Allow'] = 'GET, POST, PUT, DELETE, OPTIONS';
+    res.writeHead(200, headers);
+    res.end();
   }
 };
